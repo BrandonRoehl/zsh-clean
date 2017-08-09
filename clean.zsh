@@ -35,10 +35,44 @@ prompt_preexec() {
     cmd_timestamp=$EPOCHSECONDS
 }
 
+# From sindresorhus/pure
+# https://github.com/sindresorhus/pure/blob/master/pure.zsh#L338
+prompt_git_arrows() {
+	setopt localoptions noshwordsplit
+	local arrows left=${1:-0} right=${2:-0}
+
+	(( right > 0 )) && arrows+=${PURE_GIT_DOWN_ARROW:-⇣}
+	(( left > 0 )) && arrows+=${PURE_GIT_UP_ARROW:-⇡}
+
+	[[ -n $arrows ]] || return
+	typeset -g REPLY=$arrows
+}
+
+
 prompt_precmd() {
     vcs_info
     cmd_exec_time=`prompt_check_cmd_exec_time`
     unset cmd_timestamp
+
+    if command git rev-parse --is-inside-work-tree &> /dev/null
+    then
+        vcs_info_msg_1_ = ""
+        if command git diff --quiet &> /dev/null
+        then
+            vcs_info_msg_1_ += "*"
+        fi
+        if command git diff --cached --quiet &> /dev/null
+        then
+            vcs_info_msg_1_ += "+"
+        fi
+        if [[ -z `git ls-files --other --exclude-standard` ]]
+        then
+            vcs_info_msg_1_ += "."
+        fi
+        local REPLY
+        prompt_git_arrows `command git rev-list --left-right --count HEAD...@'{u}'`
+        git_arrows=$REPLY
+    fi
 }
 
 prompt_init() {
@@ -47,7 +81,9 @@ prompt_init() {
     setopt prompt_subst
 
     # Load required modules
-    autoload -Uz vcs_info
+    autoload -Uz add-zsh-hook
+	autoload -Uz vcs_info
+    autoload -U promptinit
 
     zstyle ':vcs_info:*' enable hg bzr git
     zstyle ':vcs_info:*' unstagedstr '*'
@@ -57,7 +93,7 @@ prompt_init() {
     zstyle ':vcs_info:git:*' formats "%b" "%u%c"
     zstyle ':vcs_info:git:*' actionformats "%b" "%u%c" "(%a)"
 
-
+    promptinit
 
     add-zsh-hook precmd prompt_precmd
 	add-zsh-hook preexec prompt_preexec
