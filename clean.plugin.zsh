@@ -31,7 +31,7 @@ prompt_clean_setup() {
     autoload -Uz vcs_info
     autoload -U promptinit
 
-    # zstyle ':vcs_info:*+*:*' debug true
+    # zstyle ':vcs_info:*' debug true
     zstyle ':vcs_info:*' enable ALL
     zstyle ':vcs_info:*' unstagedstr '*'
     zstyle ':vcs_info:*' stagedstr '+'
@@ -44,7 +44,8 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
     zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "%a"
     # Additional hooks
-    zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-arrows
+    zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
+    zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 
     promptinit
 
@@ -96,13 +97,14 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-untracked() {
-    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+    if [[ $1 -eq 0 ]] && \
+        [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
         git status --porcelain | grep '??' &> /dev/null ; then
         # This will show the marker if there are any untracked files in repo.
         # If instead you want to show the marker only if there are untracked
         # files in $PWD, use:
         #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-        hook_com[staged]+='.'
+        hook_com[unstaged]+='.'
     fi
 }
 
@@ -111,10 +113,12 @@ prompt_clean_chpwd() {
     local rev="${(@z)responce}"
     local left=$rev[1] right=$rev[2]
 
+    local arrows
     (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
     (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
 
     [[ -n $arrows ]] || return
+
     hook_com[action]+=$arrows
 }
 
