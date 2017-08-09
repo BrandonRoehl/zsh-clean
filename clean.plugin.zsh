@@ -79,7 +79,7 @@ prompt_precmd() {
             vcs_info_msg_1_+="."
         fi
         local REPLY
-        prompt_git_arrows `command git rev-list --left-right --count HEAD...@'{u}'`
+        prompt_git_arrows `git rev-list --left-right --count HEAD...@'{u}'`
         vcs_info_msg_2_+=$REPLY
     fi
     psvar[1]=$vcs_info_msg_0_
