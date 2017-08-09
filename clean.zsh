@@ -27,14 +27,6 @@ prompt_check_cmd_exec_time() {
 	}
 }
 
-prompt_chwd() {
-    (git fetch &)
-}
-
-prompt_preexec() {
-    cmd_timestamp=$EPOCHSECONDS
-}
-
 # From sindresorhus/pure
 # https://github.com/sindresorhus/pure/blob/master/pure.zsh#L338
 prompt_git_arrows() {
@@ -48,6 +40,9 @@ prompt_git_arrows() {
 	typeset -g REPLY=$arrows
 }
 
+prompt_chpwd() {
+    (git fetch &)
+}
 
 prompt_precmd() {
     vcs_info
@@ -75,6 +70,10 @@ prompt_precmd() {
     fi
 }
 
+prompt_preexec() {
+    cmd_timestamp=$EPOCHSECONDS
+}
+
 prompt_init() {
 	setopt localoptions noshwordsplit
     # Set required options
@@ -95,6 +94,7 @@ prompt_init() {
 
     promptinit
 
+    add-zsh-hook chpwd prompt_chpwd
     add-zsh-hook precmd prompt_precmd
 	add-zsh-hook preexec prompt_preexec
 }
