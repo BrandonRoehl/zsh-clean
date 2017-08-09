@@ -104,17 +104,17 @@ prompt_init() {
     autoload -Uz vcs_info
     autoload -U promptinit
 
-    zstyle ':vcs_info:*' enable hg bzr git
+    zstyle ':vcs_info:*' enable ALL
     zstyle ':vcs_info:*' unstagedstr '*'
     zstyle ':vcs_info:*' stagedstr '+'
-    # only export two msg variables from vcs_info
     zstyle ':vcs_info:*' max-exports 3
+    zstyle ':vcs_info:*' use-simple true
+    zstyle ':vcs_info:*' get-revision true
+    zstyle ':vcs_info:*' check-for-changes true
     zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "(%a)"
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
     zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "(%a)"
-    zstyle ':vcs_info:git:*' get-revision true
-    zstyle ':vcs_info:git:*' check-for-changes true
 
     promptinit
 
