@@ -40,11 +40,11 @@ prompt_human_time_to_var() {
 # stores (into prompt_pure_cmd_exec_time) the exec time of the last command if set threshold was exceeded
 prompt_check_cmd_exec_time() {
 	integer elapsed
-	# (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
-	# cmd_exec_time=
-	# (( elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5} )) && {
-		# prompt_human_time_to_var $elapsed
-	# }
+    (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
+    cmd_exec_time=
+    (( elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5} )) && {
+        prompt_human_time_to_var $elapsed
+    }
 }
 
 # From sindresorhus/pure
@@ -53,8 +53,8 @@ prompt_git_arrows() {
 	setopt localoptions noshwordsplit
 	local arrows left=${1:-0} right=${2:-0}
 
-	(( right > 0 )) && arrows+=${PURE_GIT_DOWN_ARROW:-⇣}
-	(( left > 0 )) && arrows+=${PURE_GIT_UP_ARROW:-⇡}
+	(( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
+	(( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
 
 	[[ -n $arrows ]] || return
 	typeset -g REPLY=$arrows
@@ -132,10 +132,11 @@ prompt_init() {
 	local -ah ps1
 	ps1=(
 		$prompt_newline           # Initial newline, for spaciousness.
-        '%F{45}%~ %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_} %F{87}${vcs_info_msg_2_}'
+        '%F{45}%~'
+        ' %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_} %F{87}${vcs_info_msg_2_}'
         $prompt_username
 		$prompt_newline           # Separate preprompt and prompt.
-        '%(?.%F{177}.%F{203})%(!.#.❯)%f%b '
+        '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f%b '
 	)
 
 	PROMPT="${(j..)ps1}"
