@@ -106,7 +106,6 @@ prompt_init() {
 
     # Load required modules
     zmodload zsh/datetime
-	zmodload zsh/zle
 	zmodload zsh/parameter
 
     autoload -Uz add-zsh-hook
