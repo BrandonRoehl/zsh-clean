@@ -38,7 +38,7 @@ prompt_preexec() {
 prompt_precmd() {
     vcs_info
     cmd_exec_time=`prompt_check_cmd_exec_time`
-    unset prompt_cmd_timestamp
+    unset cmd_timestamp
 }
 
 prompt_init() {
