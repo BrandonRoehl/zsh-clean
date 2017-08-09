@@ -41,10 +41,10 @@ prompt_human_time_to_var() {
 prompt_check_cmd_exec_time() {
 	integer elapsed
     (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
-    cmd_exec_time=
-    (( elapsed > ${CMD_MAX_EXEC_TIME:=5} )) && {
-        prompt_human_time_to_var $elapsed
-    }
+    if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
+    then
+        print `prompt_human_time_to_var $elapsed`
+    fi
 }
 
 # From sindresorhus/pure
@@ -66,10 +66,10 @@ prompt_chpwd() {
 }
 
 prompt_precmd() {
-    vcs_info
-
-    prompt_check_cmd_exec_time
+    psvar[4]=`prompt_check_cmd_exec_time`
     unset cmd_timestamp
+
+    vcs_info
 
     if command git rev-parse --is-inside-work-tree &> /dev/null
     then
@@ -90,6 +90,9 @@ prompt_precmd() {
         prompt_git_arrows `command git rev-list --left-right --count HEAD...@'{u}'`
         vcs_info_msg_2_+=$REPLY
     fi
+    psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
 }
 
 prompt_preexec() {
@@ -102,6 +105,10 @@ prompt_init() {
     setopt prompt_subst
 
     # Load required modules
+    zmodload zsh/datetime
+	zmodload zsh/zle
+	zmodload zsh/parameter
+
     autoload -Uz add-zsh-hook
 	autoload -Uz vcs_info
     autoload -U promptinit
@@ -113,8 +120,8 @@ prompt_init() {
 	zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*:*' formats "%s/%b" "%u%c"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%u%c" "(%a)"
-    zstyle ':vcs_info:git:*' formats "%b" "%u%c"
-    zstyle ':vcs_info:git:*' actionformats "%b" "%u%c" "(%a)"
+    zstyle ':vcs_info:git:*' formats "%b"
+    zstyle ':vcs_info:git:*' actionformats "%b" "" "(%a)"
 
     promptinit
 
@@ -132,14 +139,16 @@ prompt_init() {
 	local -ah ps1
 	ps1=(
 		$prompt_newline           # Initial newline, for spaciousness.
-        '%F{45}%~'
-        ' %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_} %F{87}${vcs_info_msg_2_}'
+        '%F{45}%~%f'
+        '%(1v. %F{243}%1v%2v%(3v. %F{87}%3v%f.).)'
+        ' %F{215}%4v%f'
         $prompt_username
 		$prompt_newline           # Separate preprompt and prompt.
-        '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f%b '
+        '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
 	)
 
-	PROMPT="${(j..)ps1}"
+	PS1="${(j..)ps1}"
+    PS2='%F{242}%_ %F{51}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
 }
 
 prompt_init
