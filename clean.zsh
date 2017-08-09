@@ -37,12 +37,12 @@ prompt_human_time_to_var() {
 	print "${human}"
 }
 
-# stores (into prompt_pure_cmd_exec_time) the exec time of the last command if set threshold was exceeded
+#Doesn't work
 prompt_check_cmd_exec_time() {
 	integer elapsed
     (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
     cmd_exec_time=
-    (( elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5} )) && {
+    (( elapsed > ${CMD_MAX_EXEC_TIME:=5} )) && {
         prompt_human_time_to_var $elapsed
     }
 }
