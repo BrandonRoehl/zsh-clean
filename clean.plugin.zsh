@@ -22,7 +22,7 @@
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
 # https://github.com/sindresorhus/pretty-time-zsh
-prompt_human_time_to_var() {
+prompt_clean_human_time_to_var() {
     local human total_seconds=$1
     local days=$(( total_seconds / 60 / 60 / 24 ))
     local hours=$(( total_seconds / 60 / 60 % 24 ))
@@ -38,18 +38,18 @@ prompt_human_time_to_var() {
 }
 
 #Doesn't work
-prompt_check_cmd_exec_time() {
+prompt_clean_check_cmd_exec_time() {
     integer elapsed
     (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
     if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
     then
-        print `prompt_human_time_to_var $elapsed`
+        print `prompt_clean_human_time_to_var $elapsed`
     fi
 }
 
 # From sindresorhus/pure
 # https://github.com/sindresorhus/pure/blob/master/pure.zsh#L338
-prompt_git_arrows() {
+prompt_clean_git_arrows() {
     setopt localoptions noshwordsplit
     local arrows left=${1:-0} right=${2:-0}
 
@@ -60,13 +60,13 @@ prompt_git_arrows() {
     typeset -g REPLY=$arrows
 }
 
-prompt_chpwd() {
+prompt_clean_chpwd() {
     command git rev-parse --is-inside-work-tree &> /dev/null || return
     (git fetch &)
 }
 
-prompt_precmd() {
-    psvar[4]=`prompt_check_cmd_exec_time`
+prompt_clean_precmd() {
+    psvar[4]=`prompt_clean_check_cmd_exec_time`
     unset cmd_timestamp
 
     vcs_info
@@ -79,7 +79,7 @@ prompt_precmd() {
             vcs_info_msg_1_+="."
         fi
         local REPLY
-        prompt_git_arrows `git rev-list --left-right --count HEAD...@'{u}'`
+        prompt_clean_git_arrows `git rev-list --left-right --count HEAD...@'{u}'`
         vcs_info_msg_2_+=$REPLY
     fi
     psvar[1]=$vcs_info_msg_0_
@@ -87,11 +87,11 @@ prompt_precmd() {
     psvar[3]=$vcs_info_msg_2_
 }
 
-prompt_preexec() {
+prompt_clean_preexec() {
     cmd_timestamp=$EPOCHSECONDS
 }
 
-prompt_init() {
+prompt_clean_setup() {
     setopt localoptions noshwordsplit
     # Set required options
     setopt prompt_subst
@@ -118,9 +118,9 @@ prompt_init() {
 
     promptinit
 
-    add-zsh-hook chpwd prompt_chpwd
-    add-zsh-hook precmd prompt_precmd
-    add-zsh-hook preexec prompt_preexec
+    add-zsh-hook chpwd prompt_clean_chpwd
+    add-zsh-hook precmd prompt_clean_precmd
+    add-zsh-hook preexec prompt_clean_preexec
 
     # show username@host if logged in through SSH
     [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
@@ -137,12 +137,13 @@ prompt_init() {
         '%(4V. %F{215}%4v%f.)'
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
-        '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
+        '%(?.%F{177}.%F{203})' # Virtual env
+        '%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
     )
 
     PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{51}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
 }
 
-prompt_init
+prompt_clean_setup
 
