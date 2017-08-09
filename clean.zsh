@@ -23,7 +23,7 @@
 # 165392 => 1d 21h 56m 32s
 # https://github.com/sindresorhus/pretty-time-zsh
 prompt_human_time_to_var() {
-	local human total_seconds=$1 var=$2
+	local human total_seconds=$1
 	local days=$(( total_seconds / 60 / 60 / 24 ))
 	local hours=$(( total_seconds / 60 / 60 % 24 ))
 	local minutes=$(( total_seconds / 60 % 60 ))
@@ -40,11 +40,11 @@ prompt_human_time_to_var() {
 # stores (into prompt_pure_cmd_exec_time) the exec time of the last command if set threshold was exceeded
 prompt_check_cmd_exec_time() {
 	integer elapsed
-	(( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
-	prompt_pure_cmd_exec_time=
-	(( elapsed > ${CMD_MAX_EXEC_TIME:=5} )) && {
-		prompt_pure_human_time_to_var $elapsed "prompt_pure_cmd_exec_time"
-	}
+	# (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
+	# cmd_exec_time=
+	# (( elapsed > ${PURE_CMD_MAX_EXEC_TIME:=5} )) && {
+		# prompt_human_time_to_var $elapsed
+	# }
 }
 
 # From sindresorhus/pure
@@ -61,32 +61,34 @@ prompt_git_arrows() {
 }
 
 prompt_chpwd() {
+    command git rev-parse --is-inside-work-tree &> /dev/null || return
     (git fetch &)
 }
 
 prompt_precmd() {
     vcs_info
-    cmd_exec_time=`prompt_check_cmd_exec_time`
+
+    prompt_check_cmd_exec_time
     unset cmd_timestamp
 
     if command git rev-parse --is-inside-work-tree &> /dev/null
     then
-        vcs_info_msg_1_ = ""
-        if command git diff --quiet &> /dev/null
+        vcs_info_msg_1_=""
+        if ! command git diff --quiet &> /dev/null
         then
-            vcs_info_msg_1_ += "*"
+            vcs_info_msg_1_+="*"
         fi
-        if command git diff --cached --quiet &> /dev/null
+        if ! command git diff --cached --quiet &> /dev/null
         then
-            vcs_info_msg_1_ += "+"
+            vcs_info_msg_1_+="+"
         fi
-        if [[ -z `git ls-files --other --exclude-standard` ]]
+        if [[ -n `git ls-files --other --exclude-standard` ]]
         then
-            vcs_info_msg_1_ += "."
+            vcs_info_msg_1_+="."
         fi
         local REPLY
         prompt_git_arrows `command git rev-list --left-right --count HEAD...@'{u}'`
-        vcs_info_msg_2_ += $REPLY
+        vcs_info_msg_2_+=$REPLY
     fi
 }
 
@@ -107,6 +109,8 @@ prompt_init() {
     zstyle ':vcs_info:*' enable hg bzr git
     zstyle ':vcs_info:*' unstagedstr '*'
     zstyle ':vcs_info:*' stagedstr '+'
+    # only export two msg variables from vcs_info
+	zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*:*' formats "%s/%b" "%u%c"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%u%c" "(%a)"
     zstyle ':vcs_info:git:*' formats "%b" "%u%c"
@@ -122,13 +126,13 @@ prompt_init() {
 	[[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
 
 	# show username@host if root, with username in white
-	[[ $UID -eq 0 ]] && prompt_username=' %F{white}%n%f%F{242}@%m%f'
+	[[ $UID -eq 0 ]] && prompt_username=' %F{255}%n%f%F{242}@%m%f'
 
     # Construct the new prompt with a clean preprompt.
 	local -ah ps1
 	ps1=(
 		$prompt_newline           # Initial newline, for spaciousness.
-        '%~%(vcs_info_msg_0_. %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_}.)'
+        '%F{45}%~ %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_} %F{87}${vcs_info_msg_2_}'
         $prompt_username
 		$prompt_newline           # Separate preprompt and prompt.
         '%(?.%F{177}.%F{203})%(!.#.❯)%f%b '
