@@ -71,17 +71,9 @@ prompt_precmd() {
 
     vcs_info
 
+    # TODO move to vcs_info hooks
     if command git rev-parse --is-inside-work-tree &> /dev/null
     then
-        vcs_info_msg_1_=""
-        if ! command git diff --quiet &> /dev/null
-        then
-            vcs_info_msg_1_+="*"
-        fi
-        if ! command git diff --cached --quiet &> /dev/null
-        then
-            vcs_info_msg_1_+="+"
-        fi
         if [[ -n `git ls-files --other --exclude-standard` ]]
         then
             vcs_info_msg_1_+="."
@@ -117,10 +109,12 @@ prompt_init() {
     zstyle ':vcs_info:*' stagedstr '+'
     # only export two msg variables from vcs_info
     zstyle ':vcs_info:*' max-exports 3
-    zstyle ':vcs_info:*:*' formats "%s/%b" "%u%c"
-    zstyle ':vcs_info:*:*' actionformats "%s/%b" "%u%c" "(%a)"
-    zstyle ':vcs_info:git:*' formats "%b"
-    zstyle ':vcs_info:git:*' actionformats "%b" "" "(%a)"
+    zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
+    zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "(%a)"
+    zstyle ':vcs_info:git:*' formats "%b" "%c%u"
+    zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "(%a)"
+    zstyle ':vcs_info:git:*' get-revision true
+    zstyle ':vcs_info:git:*' check-for-changes true
 
     promptinit
 
