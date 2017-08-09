@@ -140,7 +140,7 @@ prompt_init() {
         $prompt_newline # Initial newline, for spaciousness.
         '%F{45}%~%f'
         '%(1v. %F{243}%1v%2v%(3v. %F{87}%3v%f.).)'
-        ' %F{215}%4v%f'
+        '%(4v. %F{215}%4v%f.)'
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
         '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
