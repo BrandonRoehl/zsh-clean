@@ -23,23 +23,23 @@
 # 165392 => 1d 21h 56m 32s
 # https://github.com/sindresorhus/pretty-time-zsh
 prompt_human_time_to_var() {
-	local human total_seconds=$1
-	local days=$(( total_seconds / 60 / 60 / 24 ))
-	local hours=$(( total_seconds / 60 / 60 % 24 ))
-	local minutes=$(( total_seconds / 60 % 60 ))
-	local seconds=$(( total_seconds % 60 ))
-	(( days > 0 )) && human+="${days}d "
-	(( hours > 0 )) && human+="${hours}h "
-	(( minutes > 0 )) && human+="${minutes}m "
-	human+="${seconds}s"
+    local human total_seconds=$1
+    local days=$(( total_seconds / 60 / 60 / 24 ))
+    local hours=$(( total_seconds / 60 / 60 % 24 ))
+    local minutes=$(( total_seconds / 60 % 60 ))
+    local seconds=$(( total_seconds % 60 ))
+    (( days > 0 )) && human+="${days}d "
+    (( hours > 0 )) && human+="${hours}h "
+    (( minutes > 0 )) && human+="${minutes}m "
+    human+="${seconds}s"
 
-	# store human readable time in variable as specified by caller
-	print "${human}"
+    # store human readable time in variable as specified by caller
+    print "${human}"
 }
 
 #Doesn't work
 prompt_check_cmd_exec_time() {
-	integer elapsed
+    integer elapsed
     (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
     if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
     then
@@ -50,14 +50,14 @@ prompt_check_cmd_exec_time() {
 # From sindresorhus/pure
 # https://github.com/sindresorhus/pure/blob/master/pure.zsh#L338
 prompt_git_arrows() {
-	setopt localoptions noshwordsplit
-	local arrows left=${1:-0} right=${2:-0}
+    setopt localoptions noshwordsplit
+    local arrows left=${1:-0} right=${2:-0}
 
-	(( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
-	(( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
+    (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
+    (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
 
-	[[ -n $arrows ]] || return
-	typeset -g REPLY=$arrows
+    [[ -n $arrows ]] || return
+    typeset -g REPLY=$arrows
 }
 
 prompt_chpwd() {
@@ -100,23 +100,23 @@ prompt_preexec() {
 }
 
 prompt_init() {
-	setopt localoptions noshwordsplit
+    setopt localoptions noshwordsplit
     # Set required options
     setopt prompt_subst
 
     # Load required modules
     zmodload zsh/datetime
-	zmodload zsh/parameter
+    zmodload zsh/parameter
 
     autoload -Uz add-zsh-hook
-	autoload -Uz vcs_info
+    autoload -Uz vcs_info
     autoload -U promptinit
 
     zstyle ':vcs_info:*' enable hg bzr git
     zstyle ':vcs_info:*' unstagedstr '*'
     zstyle ':vcs_info:*' stagedstr '+'
     # only export two msg variables from vcs_info
-	zstyle ':vcs_info:*' max-exports 3
+    zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*:*' formats "%s/%b" "%u%c"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%u%c" "(%a)"
     zstyle ':vcs_info:git:*' formats "%b"
@@ -126,27 +126,27 @@ prompt_init() {
 
     add-zsh-hook chpwd prompt_chpwd
     add-zsh-hook precmd prompt_precmd
-	add-zsh-hook preexec prompt_preexec
+    add-zsh-hook preexec prompt_preexec
 
     # show username@host if logged in through SSH
-	[[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
+    [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
 
-	# show username@host if root, with username in white
-	[[ $UID -eq 0 ]] && prompt_username=' %F{255}%n%f%F{242}@%m%f'
+    # show username@host if root, with username in white
+    [[ $UID -eq 0 ]] && prompt_username=' %F{255}%n%f%F{242}@%m%f'
 
     # Construct the new prompt with a clean preprompt.
-	local -ah ps1
-	ps1=(
-		$prompt_newline           # Initial newline, for spaciousness.
+    local -ah ps1
+    ps1=(
+        $prompt_newline # Initial newline, for spaciousness.
         '%F{45}%~%f'
         '%(1v. %F{243}%1v%2v%(3v. %F{87}%3v%f.).)'
         ' %F{215}%4v%f'
         $prompt_username
-		$prompt_newline           # Separate preprompt and prompt.
+        $prompt_newline # Separate preprompt and prompt.
         '%(?.%F{177}.%F{203})%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
-	)
+    )
 
-	PS1="${(j..)ps1}"
+    PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{51}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
 }
 
