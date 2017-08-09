@@ -1,3 +1,23 @@
+# For my own and others sanity
+# git:
+# %b => current branch
+# %a => current action (rebase/merge)
+# prompt:
+# %F => color dict
+# %f => reset color
+# %~ => current path
+# %* => time
+# %n => username
+# %m => shortname host
+# %(?..) => prompt conditional - %(condition.true.false)
+# terminal codes:
+# \e7   => save cursor position
+# \e[2A => move cursor 2 lines up
+# \e[1G => go to position 1 in terminal
+# \e8   => restore cursor position
+# \e[K  => clears everything after the cursor on the current line
+# \e[2K => clear everything on the current line
+
 
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
@@ -66,7 +86,7 @@ prompt_precmd() {
         fi
         local REPLY
         prompt_git_arrows `command git rev-list --left-right --count HEAD...@'{u}'`
-        git_arrows=$REPLY
+        vcs_info_msg_2_ += $REPLY
     fi
 }
 
@@ -97,8 +117,25 @@ prompt_init() {
     add-zsh-hook chpwd prompt_chpwd
     add-zsh-hook precmd prompt_precmd
 	add-zsh-hook preexec prompt_preexec
+
+    # show username@host if logged in through SSH
+	[[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
+
+	# show username@host if root, with username in white
+	[[ $UID -eq 0 ]] && prompt_username=' %F{white}%n%f%F{242}@%m%f'
+
+    # Construct the new prompt with a clean preprompt.
+	local -ah ps1
+	ps1=(
+		$prompt_newline           # Initial newline, for spaciousness.
+        '%~%(vcs_info_msg_0_. %F{243}${vcs_info_msg_0_}${vcs_info_msg_1_}.)'
+        $prompt_username
+		$prompt_newline           # Separate preprompt and prompt.
+        '%(?.%F{177}.%F{203})%(!.#.❯)%f%b '
+	)
+
+	PROMPT="${(j..)ps1}"
 }
 
-
-
+prompt_init
 
