@@ -62,7 +62,7 @@ prompt_clean_git_arrows() {
 
 prompt_clean_chpwd() {
     command git rev-parse --is-inside-work-tree &> /dev/null || return
-    (git fetch &)
+    (git fetch &> /dev/null &)
 }
 
 prompt_clean_precmd() {
