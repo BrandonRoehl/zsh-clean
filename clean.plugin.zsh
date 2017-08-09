@@ -18,79 +18,6 @@
 # \e[K  => clears everything after the cursor on the current line
 # \e[2K => clear everything on the current line
 
-
-# turns seconds into human readable time
-# 165392 => 1d 21h 56m 32s
-# https://github.com/sindresorhus/pretty-time-zsh
-prompt_clean_human_time_to_var() {
-    local human total_seconds=$1
-    local days=$(( total_seconds / 60 / 60 / 24 ))
-    local hours=$(( total_seconds / 60 / 60 % 24 ))
-    local minutes=$(( total_seconds / 60 % 60 ))
-    local seconds=$(( total_seconds % 60 ))
-    (( days > 0 )) && human+="${days}d "
-    (( hours > 0 )) && human+="${hours}h "
-    (( minutes > 0 )) && human+="${minutes}m "
-    human+="${seconds}s"
-
-    # store human readable time in variable as specified by caller
-    print "${human}"
-}
-
-#Doesn't work
-prompt_clean_check_cmd_exec_time() {
-    integer elapsed
-    (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
-    if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
-    then
-        print `prompt_clean_human_time_to_var $elapsed`
-    fi
-}
-
-# From sindresorhus/pure
-# https://github.com/sindresorhus/pure/blob/master/pure.zsh#L338
-prompt_clean_git_arrows() {
-    setopt localoptions noshwordsplit
-    local arrows left=${1:-0} right=${2:-0}
-
-    (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
-    (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
-
-    [[ -n $arrows ]] || return
-    typeset -g REPLY=$arrows
-}
-
-prompt_clean_chpwd() {
-    command git rev-parse --is-inside-work-tree &> /dev/null || return
-    (git fetch &> /dev/null &)
-}
-
-prompt_clean_precmd() {
-    psvar[4]=`prompt_clean_check_cmd_exec_time`
-    unset cmd_timestamp
-
-    vcs_info
-
-    # TODO move to vcs_info hooks
-    if command git rev-parse --is-inside-work-tree &> /dev/null
-    then
-        if [[ -n `git ls-files --other --exclude-standard` ]]
-        then
-            vcs_info_msg_1_+="."
-        fi
-        local REPLY
-        prompt_clean_git_arrows `git rev-list --left-right --count HEAD...@'{u}'`
-        vcs_info_msg_2_+=$REPLY
-    fi
-    psvar[1]=$vcs_info_msg_0_
-    psvar[2]=$vcs_info_msg_1_
-    psvar[3]=$vcs_info_msg_2_
-}
-
-prompt_clean_preexec() {
-    cmd_timestamp=$EPOCHSECONDS
-}
-
 prompt_clean_setup() {
     setopt localoptions noshwordsplit
     # Set required options
@@ -104,6 +31,7 @@ prompt_clean_setup() {
     autoload -Uz vcs_info
     autoload -U promptinit
 
+    # zstyle ':vcs_info:*+*:*' debug true
     zstyle ':vcs_info:*' enable ALL
     zstyle ':vcs_info:*' unstagedstr '*'
     zstyle ':vcs_info:*' stagedstr '+'
@@ -112,9 +40,11 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
     zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
-    zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "(%a)"
+    zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "%a"
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
-    zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "(%a)"
+    zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "%a"
+    # Additional hooks
+    zstyle ':vcs_info:git*+set-message:*' hooks git-untracked git-arrows
 
     promptinit
 
@@ -143,6 +73,76 @@ prompt_clean_setup() {
 
     PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{51}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
+}
+
+prompt_clean_preexec() {
+    cmd_timestamp=$EPOCHSECONDS
+}
+
+prompt_clean_precmd() {
+    psvar[4]=`prompt_clean_check_cmd_exec_time`
+    unset cmd_timestamp
+
+    vcs_info
+
+    psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
+}
+
+prompt_clean_chpwd() {
+    command git rev-parse --is-inside-work-tree &> /dev/null || return
+    (git fetch &> /dev/null &)
+}
+
++vi-git-untracked() {
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        git status --porcelain | grep '??' &> /dev/null ; then
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        hook_com[staged]+='.'
+    fi
+}
+
++vi-git-arrows() {
+    local responce=`git rev-list --left-right --count HEAD...@'{u}'`
+    local rev="${(@z)responce}"
+    local left=$rev[1] right=$rev[2]
+
+    (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
+    (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
+
+    [[ -n $arrows ]] || return
+    hook_com[action]+=$arrows
+}
+
+# turns seconds into human readable time
+# 165392 => 1d 21h 56m 32s
+# https://github.com/sindresorhus/pretty-time-zsh
+prompt_clean_human_time_to_var() {
+    local human total_seconds=$1
+    local days=$(( total_seconds / 60 / 60 / 24 ))
+    local hours=$(( total_seconds / 60 / 60 % 24 ))
+    local minutes=$(( total_seconds / 60 % 60 ))
+    local seconds=$(( total_seconds % 60 ))
+    (( days > 0 )) && human+="${days}d "
+    (( hours > 0 )) && human+="${hours}h "
+    (( minutes > 0 )) && human+="${minutes}m "
+    human+="${seconds}s"
+
+    # store human readable time in variable as specified by caller
+    print "${human}"
+}
+
+prompt_clean_check_cmd_exec_time() {
+    integer elapsed
+    (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
+    if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
+    then
+        print `prompt_clean_human_time_to_var $elapsed`
+    fi
 }
 
 prompt_clean_setup
