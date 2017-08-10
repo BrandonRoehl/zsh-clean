@@ -40,9 +40,9 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
     zstyle ':vcs_info:*:*' formats " %F{245}%s%F{242}/%b%c%u%f"
-    zstyle ':vcs_info:*:*' actionformats " %F{245}%s%F{242}/%b%c%u %F{87}%a%f"
+    zstyle ':vcs_info:*:*' actionformats " %F{245}%s%F{242}/%b%c%u %F{123}%a%f"
     zstyle ':vcs_info:git:*' formats " %F{242}%b%c%u%f"
-    zstyle ':vcs_info:git:*' actionformats " %F{242}%b%c%u %F{87}%a%f"
+    zstyle ':vcs_info:git:*' actionformats " %F{242}%b%c%u %F{123}%a%f"
     # Additional hooks
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
@@ -60,7 +60,7 @@ prompt_clean_setup() {
     local -ah ps1
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
-        '%F{45}%~%f'
+        '%F{81}%~%f'
         '${vcs_info_msg_0_}'
         '%(2V. %F{215}%2v%f.)'
         $prompt_username
