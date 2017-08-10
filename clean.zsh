@@ -60,7 +60,7 @@ prompt_clean_setup() {
     local -ah ps1
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
-        '%F{51}%~%f'
+        '%F{45}%~%f'
         '${vcs_info_msg_0_}'
         '%(2V. %F{215}%2v%f.)'
         $prompt_username
