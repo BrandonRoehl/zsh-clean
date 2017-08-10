@@ -107,7 +107,7 @@ prompt_clean_chpwd() {
 
 +vi-git-arrows() {
     local arrows=`git rev-list --left-right --count HEAD...@'{u}'`
-    local rev="${(@z)responce}"
+    local rev=("${(@z)arrows}")
     local left=$rev[1] right=$rev[2]
 
     unset arrows
