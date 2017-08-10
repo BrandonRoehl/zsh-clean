@@ -65,8 +65,7 @@ prompt_clean_setup() {
         '%(2V. %F{215}%2v%f.)'
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
-        '%(?.%F{135}.%F{160})' # Virtual env
-        '%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
+        '%(?.%F{135}.%F{160})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
     )
 
     PS1="${(j..)ps1}"
