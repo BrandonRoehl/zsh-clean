@@ -56,9 +56,6 @@ prompt_clean_setup() {
     # show username@host if logged in through SSH
     [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
 
-    # show username@host if root, with username in white
-    [[ $UID -eq 0 ]] && prompt_username=' %F{255}%n%f%F{242}@%m%f'
-
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
     ps1=(
