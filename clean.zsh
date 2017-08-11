@@ -65,11 +65,11 @@ prompt_clean_setup() {
         '%(2V. %F{215}%2v%f.)'
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
-        '%(?.%F{135}.%F{203})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
+        '%(?.%F{207}.%F{203})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
     )
 
     PS1="${(j..)ps1}"
-    PS2='%F{242}%_ %F{51}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
+    PS2='%F{242}%_ %F{37}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
 }
 
 prompt_clean_preexec() {
