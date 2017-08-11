@@ -92,8 +92,8 @@ prompt_clean_chpwd() {
 
 +vi-git-untracked() {
     if [[ $1 -eq 0 ]] && \
-        [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-        git status --porcelain | grep '??' &> /dev/null ; then
+        [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        $vcs status --porcelain | grep '??' &> /dev/null ; then
         # This will show the marker if there are any untracked files in repo.
         # If instead you want to show the marker only if there are untracked
         # files in $PWD, use:
@@ -103,7 +103,7 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-arrows() {
-    local arrows=`git rev-list --left-right --count HEAD...@'{u}'`
+    local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
     local rev=("${(@z)arrows}")
     local left=$rev[1] right=$rev[2]
 
