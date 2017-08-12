@@ -79,10 +79,7 @@ prompt_clean_preexec() {
 prompt_clean_precmd() {
     psvar[2]=`prompt_clean_check_cmd_exec_time`
     unset cmd_timestamp
-
     vcs_info
-
-    psvar[1]=$vcs_info_msg_0_
 }
 
 prompt_clean_chpwd() {
