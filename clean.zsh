@@ -39,10 +39,10 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' use-simple true
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
-    zstyle ':vcs_info:*:*' formats " %F{245}%s%F{242}/%b%c%u%f"
-    zstyle ':vcs_info:*:*' actionformats " %F{245}%s%F{242}/%b%c%u %F{123}%a%f"
-    zstyle ':vcs_info:git:*' formats " %F{242}%b%c%u%f"
-    zstyle ':vcs_info:git:*' actionformats " %F{242}%b%c%u %F{123}%a%f"
+    zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
+    zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "%a"
+    zstyle ':vcs_info:git:*' formats "%b" "%c%u"
+    zstyle ':vcs_info:git:*' actionformats "%b" "%c%u" "%a"
     # Additional hooks
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
@@ -60,9 +60,9 @@ prompt_clean_setup() {
     local -ah ps1
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
-        '%F{45}%~%f'
-        '${vcs_info_msg_0_}'
-        '%(2V. %F{215}%2v%f.)'
+        '%F{45}%~%f' # Path
+        '%(1V. %F{243}%1v%2v%(3V. %F{123}%3v%f.).)' # VCS status
+        '%(4V. %F{215}%4v%f.)' # Execution time
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
         '%(?.%F{207}.%F{203})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
@@ -77,10 +77,12 @@ prompt_clean_preexec() {
 }
 
 prompt_clean_precmd() {
-    psvar[2]=`prompt_clean_check_cmd_exec_time`
+    psvar[4]=`prompt_clean_check_cmd_exec_time`
     unset cmd_timestamp
     vcs_info
     psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
 }
 
 prompt_clean_chpwd() {
