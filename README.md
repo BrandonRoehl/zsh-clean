@@ -5,6 +5,24 @@ A [pure](https://github.com/sindresorhus/pure) varient however.
 
 Clean is not pure and pure is not clean
 
+## Installation
+
+### [antigen](https://github.com/zsh-users/antigen)
+
+Add to `.zshrc`
+
+```bash
+antibody bundle BrandonRoehl/zsh-clean
+```
+
+### [antibody](https://github.com/getantibody/antibody)
+
+Add to `.zshrc`
+
+```bash
+antibody bundle BrandonRoehl/zsh-clean
+```
+
 ## Goals
 
 Pure's main goal is to produce a really minimalistic setup and nothing
