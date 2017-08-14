@@ -7,15 +7,7 @@ Clean is not pure and pure is not clean
 
 ## Installation
 
-### [antigen](https://github.com/zsh-users/antigen)
-
-Add to `.zshrc`
-
-```bash
-antibody bundle BrandonRoehl/zsh-clean
-```
-
-### [antibody](https://github.com/getantibody/antibody)
+### [antigen](https://github.com/zsh-users/antigen) or [antibody](https://github.com/getantibody/antibody)
 
 Add to `.zshrc`
 
