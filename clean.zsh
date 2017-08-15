@@ -2,6 +2,8 @@
 # git:
 # %b => current branch
 # %a => current action (rebase/merge)
+# %c => current changed files
+# %u => current staged files
 # prompt:
 # %F => color dict
 # %f => reset color
@@ -55,16 +57,18 @@ prompt_clean_setup() {
 
     # show username@host if logged in through SSH
     [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
+    ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
         '%F{45}%~%f' # Path
-        '%(1V. %F{243}%1v%2v%(3V. %F{123}%3v%f.).)' # VCS status
+        '%(1V. %F{242}%1v%2v%(3V. %F{123}%3v%f.).)' # VCS status
         '%(4V. %F{215}%4v%f.)' # Execution time
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
+        $rvm_prompt
         '%(?.%F{207}.%F{203})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
     )
 
