@@ -23,6 +23,22 @@
 # \e[K  => clears everything after the cursor on the current line
 # \e[2K => clear everything on the current line
 
+prompt_clean_default() {
+    zstyle ':vcs_info:*' unstagedstr '*'
+    zstyle ':vcs_info:*' stagedstr '+'
+    zstyle ':vcs_info:*' get-revision true
+    zstyle ':vcs_info:*' check-for-changes true
+
+    # Clean specific
+    zstyle ':vcs_info:*:clean:*' untrackedstr '.'
+    zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
+    zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
+    zstyle ':vcs_info:*:clean:*' check-head true
+    zstyle ':clean:*' 256bit true
+    zstyle ':clean:normal:*' prompt-symbol '❯'
+    zstyle ':clean:root:*' prompt-symbol '#'
+}
+
 prompt_clean_setup() {
     setopt localoptions noshwordsplit
     # Set required options
@@ -97,14 +113,24 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-untracked() {
-    if [[ $1 -eq 0 ]] && \
-        [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-        $vcs status --porcelain | grep '??' &> /dev/null ; then
-        # This will show the marker if there are any untracked files in repo.
-        # If instead you want to show the marker only if there are untracked
-        # files in $PWD, use:
-        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-        hook_com[unstaged]+='.'
+
+    if [[ $1 -eq 0 ]]
+    then
+        local check
+        if ! zstyle -b ":vcs_info:$svn:clean" check-head check
+        then
+            check=false
+        fi
+        if $check &&\
+            [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+            $vcs status --porcelain | grep '??' &> /dev/null
+        then
+            # This will show the marker if there are any untracked files in repo.
+            # If instead you want to show the marker only if there are untracked
+            # files in $PWD, use:
+            #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+            hook_com[unstaged]+='.'
+        fi
     fi
 }
 
