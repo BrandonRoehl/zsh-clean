@@ -56,7 +56,7 @@ prompt_clean_setup() {
     add-zsh-hook preexec prompt_clean_preexec
 
     # show username@host if logged in through SSH
-    [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{242}%n@%m%f'
+    [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{255}%n@%m%f'
     # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
@@ -72,7 +72,7 @@ prompt_clean_setup() {
     )
 
     PS1="${(j..)ps1}"
-    PS2='%F{242}%_ %F{37}%(!.#.${GIT_PROMPT_SYMBOL:-❯})%f '
+    PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
 }
 
 prompt_clean_preexec() {
