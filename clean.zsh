@@ -119,7 +119,7 @@ prompt_clean_chpwd() {
         local check
         if ! zstyle -b ":vcs_info:$svn:clean" check-head check
         then
-            check=false
+            check=
         fi
         if $check &&\
             [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
