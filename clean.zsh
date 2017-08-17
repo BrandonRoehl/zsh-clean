@@ -51,8 +51,10 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     # Additional clean specific styles
-    zstyle ':vcs_info:*:clean:' check-for-utracked true
-    zstyle ':vcs_info:*:clean:' check-head true
+
+
+    # zstyle ':vcs_info:*:clean:*' check-for-utracked true
+    # zstyle ':vcs_info:*:clean:*' check-head true
 
     # zstyle ':vcs_info:*:clean:*' untrackedstr '.'
     # zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
@@ -114,37 +116,31 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-untracked() {
-    if [[ $1 -eq 0 ]]
+    if [[ $1 -eq 0 ]] && \
+        zstyle -T ":vcs_info:${svn}:clean:-all-" check-for-utracked && \
+        [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        $vcs status --porcelain | grep '??' &> /dev/null
     then
-        local check
-        zstyle -b ":vcs_info:${svn}:clean:" check-for-utracked check
-        if [[ $check = 'yes' ]] &&\
-            [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-            $vcs status --porcelain | grep '??' &> /dev/null
-        then
-            # This will show the marker if there are any untracked files in repo.
-            # If instead you want to show the marker only if there are untracked
-            # files in $PWD, use:
-            #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-            local sym
-            zstyle -s ':vcs_info:*:clean:' untrackedstr sym || sym='.'
-            hook_com[unstaged]+=$sym
-        fi
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        local sym
+        zstyle -s ':vcs_info:*:clean:-all-' untrackedstr sym || sym='.'
+        hook_com[unstaged]+=$sym
     fi
 }
 
 +vi-git-arrows() {
-    local check
-    zstyle -b ":vcs_info:${svn}:clean:" check-head check
-    if [[ $check = 'yes' ]] &&\
+    if zstyle -T ":vcs_info:${svn}:clean:-all-" check-head
     then
         local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
         local rev=("${(@z)arrows}")
         local left=$rev[1] right=$rev[2]
 
         local behind_arrow ahead_arrow
-        zstyle -s ':vcs_info:*:clean:' headbehindstr behind_arrow || behind_arrow='⇣'
-        zstyle -s ':vcs_info:*:clean:' headaheadstr ahead_arrow || ahead_arrow='⇡'
+        zstyle -s ':vcs_info:*:clean:-all-' headbehindstr behind_arrow || behind_arrow='⇣'
+        zstyle -s ':vcs_info:*:clean:-all-' headaheadstr ahead_arrow || ahead_arrow='⇡'
 
         unset arrows
         (( right > 0 )) && arrows+=${behind_arrow}
