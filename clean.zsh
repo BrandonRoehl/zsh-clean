@@ -80,7 +80,7 @@ prompt_clean_setup() {
 }
 
 prompt_clean_render() {
-    local prompt_sym root_prompt_sym
+    local prompt_sym root_prompt_sym prompt_username
     zstyle -s ':clean:normal:' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
@@ -93,7 +93,7 @@ prompt_clean_render() {
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
         '%F{45}%~%f' # Path
-        '%(1V. %(3V.%F{83}.%F{242})%1v%2v%(3V. %3v.)%f.)' # VCS status
+        '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
         '%(4V. %F{215}%4v%f.)' # Execution time
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
