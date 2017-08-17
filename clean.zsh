@@ -125,7 +125,7 @@ prompt_clean_chpwd() {
 
 +vi-git-untracked() {
     if [[ $1 -eq 0 ]] && \
-        zstyle -T ":vcs_info:${svn}:clean:-all-" check-for-untracked && \
+        zstyle -T ":vcs_info:${vcs}:clean:-all-" check-for-untracked && \
         [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
         $vcs status --porcelain | grep '??' &> /dev/null
     then
@@ -134,21 +134,21 @@ prompt_clean_chpwd() {
         # files in $PWD, use:
         #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
         local sym
-        zstyle -s ':vcs_info:*:clean:-all-' untrackedstr sym || sym='.'
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" untrackedstr sym || sym='.'
         hook_com[unstaged]+=$sym
     fi
 }
 
 +vi-git-arrows() {
-    if zstyle -T ":vcs_info:${svn}:clean:-all-" check-head
+    if zstyle -T ":vcs_info:${vcs}:clean:-all-" check-head
     then
         local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
         local rev=("${(@z)arrows}")
         local left=$rev[1] right=$rev[2]
 
         local behind_arrow ahead_arrow
-        zstyle -s ':vcs_info:*:clean:-all-' headbehindstr behind_arrow || behind_arrow='⇣'
-        zstyle -s ':vcs_info:*:clean:-all-' headaheadstr ahead_arrow || ahead_arrow='⇡'
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" headbehindstr behind_arrow || behind_arrow='⇣'
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" headaheadstr ahead_arrow || ahead_arrow='⇡'
 
         unset arrows
         (( right > 0 )) && arrows+=${behind_arrow}
