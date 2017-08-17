@@ -53,11 +53,10 @@ prompt_clean_setup() {
     # Additional clean specific styles
     zstyle ':vcs_info:*:clean:' check-for-utracked true
     zstyle ':vcs_info:*:clean:' check-head true
-    zstyle ':clean:*' 256bit true
 
-    # zstyle ':vcs_info:*:clean:' untrackedstr '.'
-    # zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
-    # zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
+    # zstyle ':vcs_info:*:clean:*' untrackedstr '.'
+    # zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
+    # zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
     # zstyle ':clean:normal:*' prompt-symbol '❯'
     # zstyle ':clean:root:*' prompt-symbol '#'
 
@@ -72,8 +71,8 @@ prompt_clean_setup() {
 
 prompt_clean_render() {
     local prompt_sym root_prompt_sym
-    zstyle -s ':clean:normal:' untrackedstr prompt_sym || prompt_sym='❯'
-    zstyle -s ':clean:root:' untrackedstr root_prompt_sym || root_prompt_sym='#'
+    zstyle -s ':clean:normal:' prompt-symbol prompt_sym || prompt_sym='❯'
+    zstyle -s ':clean:root:' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
     # show username@host if logged in through SSH
     [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{255}%n@%m%f'
