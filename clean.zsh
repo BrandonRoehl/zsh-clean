@@ -37,8 +37,6 @@ prompt_clean_setup() {
 
     # zstyle ':vcs_info:*' debug true
     zstyle ':vcs_info:*' enable ALL
-    zstyle ':vcs_info:*' unstagedstr '*'
-    zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*' use-simple true
     zstyle ':vcs_info:*' get-revision true
@@ -53,10 +51,13 @@ prompt_clean_setup() {
     # Additional clean specific styles
     zstyle ':vcs_info:*:clean:' check-for-utracked true
     zstyle ':vcs_info:*:clean:' check-head true
-    zstyle ':vcs_info:*:clean:' untrackedstr '.'
-    zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
-    zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
     zstyle ':clean:*' 256bit true
+
+    zstyle ':vcs_info:*' unstagedstr '✗'
+    zstyle ':vcs_info:*' stagedstr '✓'
+    # zstyle ':vcs_info:*:clean:' untrackedstr '.'
+    # zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
+    # zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
     zstyle ':clean:normal:*' prompt-symbol '❯'
     zstyle ':clean:root:*' prompt-symbol '#'
 
@@ -117,6 +118,7 @@ prompt_clean_chpwd() {
             # If instead you want to show the marker only if there are untracked
             # files in $PWD, use:
             #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        zstyle -s ':vcs_info:*:clean:' untrackedstr sym || sym='…'
             hook_com[unstaged]+='.'
         fi
     fi
@@ -132,8 +134,8 @@ prompt_clean_chpwd() {
         local left=$rev[1] right=$rev[2]
 
         local behind_arrow ahead_arrow
-        zstyle -s ':vcs_info:*:clean:' headbehindstr behind_arrow
-        zstyle -s ':vcs_info:*:clean:' headaheadstr ahead_arrow
+        zstyle -s ':vcs_info:*:clean:' headbehindstr behind_arrow || behind_arrow='⇣'
+        zstyle -s ':vcs_info:*:clean:' headaheadstr ahead_arrow || ahead_arrow='⇡'
 
         unset arrows
         (( right > 0 )) && arrows+=${behind_arrow}
