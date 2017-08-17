@@ -52,10 +52,8 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     # Additional clean specific styles
 
-
-    # zstyle ':vcs_info:*:clean:*' check-for-utracked true
+    # zstyle ':vcs_info:*:clean:*' check-for-untracked true
     # zstyle ':vcs_info:*:clean:*' check-head true
-
     # zstyle ':vcs_info:*:clean:*' untrackedstr '.'
     # zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
     # zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
@@ -117,7 +115,7 @@ prompt_clean_chpwd() {
 
 +vi-git-untracked() {
     if [[ $1 -eq 0 ]] && \
-        zstyle -T ":vcs_info:${svn}:clean:-all-" check-for-utracked && \
+        zstyle -T ":vcs_info:${svn}:clean:-all-" check-for-untracked && \
         [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
         $vcs status --porcelain | grep '??' &> /dev/null
     then
