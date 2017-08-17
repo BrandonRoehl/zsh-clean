@@ -41,6 +41,8 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' use-simple true
     zstyle ':vcs_info:*' get-revision true
     zstyle ':vcs_info:*' check-for-changes true
+    zstyle ':vcs_info:*' unstagedstr '*'
+    zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "%a"
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
@@ -53,19 +55,25 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*:clean:' check-head true
     zstyle ':clean:*' 256bit true
 
-    zstyle ':vcs_info:*' unstagedstr '✗'
-    zstyle ':vcs_info:*' stagedstr '✓'
     # zstyle ':vcs_info:*:clean:' untrackedstr '.'
     # zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
     # zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
-    zstyle ':clean:normal:*' prompt-symbol '❯'
-    zstyle ':clean:root:*' prompt-symbol '#'
+    # zstyle ':clean:normal:*' prompt-symbol '❯'
+    # zstyle ':clean:root:*' prompt-symbol '#'
 
     promptinit
 
     add-zsh-hook chpwd prompt_clean_chpwd
     add-zsh-hook precmd prompt_clean_precmd
     add-zsh-hook preexec prompt_clean_preexec
+
+    prompt_clean_render
+}
+
+prompt_clean_render() {
+    local prompt_sym root_prompt_sym
+    zstyle -s ':clean:normal:' untrackedstr prompt_sym || prompt_sym='❯'
+    zstyle -s ':clean:root:' untrackedstr root_prompt_sym || root_prompt_sym='#'
 
     # show username@host if logged in through SSH
     [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{255}%n@%m%f'
@@ -80,8 +88,9 @@ prompt_clean_setup() {
         '%(4V. %F{215}%4v%f.)' # Execution time
         $prompt_username
         $prompt_newline # Separate preprompt and prompt.
-        '%(?.%F{207}.%F{203})%(!.#.${PROMPT_SYMBOL:-❯})%f ' # Prompt symbol
+        "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
     )
+
 
     PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
@@ -118,8 +127,9 @@ prompt_clean_chpwd() {
             # If instead you want to show the marker only if there are untracked
             # files in $PWD, use:
             #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-        zstyle -s ':vcs_info:*:clean:' untrackedstr sym || sym='…'
-            hook_com[unstaged]+='.'
+            local sym
+            zstyle -s ':vcs_info:*:clean:' untrackedstr sym || sym='.'
+            hook_com[unstaged]+=$sym
         fi
     fi
 }
