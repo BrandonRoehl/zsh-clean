@@ -39,10 +39,6 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' enable ALL
     zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*' use-simple true
-    zstyle ':vcs_info:*' get-revision true
-    zstyle ':vcs_info:*' check-for-changes true
-    zstyle ':vcs_info:*' unstagedstr '*'
-    zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "%a"
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
@@ -51,6 +47,20 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     # Additional clean specific styles
+
+    # Set other defaults
+    zstyle -t ':vcs_info:*' get-revision; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' get-revision true
+    fi
+    zstyle -t ':vcs_info:*' check-for-changes; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' check-for-changes true
+    fi
+    zstyle -t ':vcs_info:*' unstagedstr; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' unstagedstr '*'
+    fi
+    zstyle -t ':vcs_info:*' stagedstr; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' stagedstr '+'
+    fi
 
     # zstyle ':vcs_info:*:clean:*' check-for-untracked true
     # zstyle ':vcs_info:*:clean:*' check-head true
