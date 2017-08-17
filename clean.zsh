@@ -22,24 +22,6 @@
 # \e8   => restore cursor position
 # \e[K  => clears everything after the cursor on the current line
 # \e[2K => clear everything on the current line
-
-prompt_clean_default() {
-    zstyle ':vcs_info:*' unstagedstr '*'
-    zstyle ':vcs_info:*' stagedstr '+'
-    zstyle ':vcs_info:*' get-revision true
-    zstyle ':vcs_info:*' check-for-changes true
-
-    # Clean specific
-    zstyle ':vcs_info:*:clean:' untrackedstr '.'
-    zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
-    zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
-    zstyle ':vcs_info:*:clean:' check-for-utracked true
-    zstyle ':vcs_info:*:clean:' check-head true
-    zstyle ':clean:*' 256bit true
-    zstyle ':clean:normal:*' prompt-symbol '❯'
-    zstyle ':clean:root:*' prompt-symbol '#'
-}
-
 prompt_clean_setup() {
     setopt localoptions noshwordsplit
     # Set required options
@@ -69,11 +51,11 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     # Additional clean specific styles
+    zstyle ':vcs_info:*:clean:' check-for-utracked true
+    zstyle ':vcs_info:*:clean:' check-head true
     zstyle ':vcs_info:*:clean:' untrackedstr '.'
     zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
     zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
-    zstyle ':vcs_info:*:clean:' check-for-utracked true
-    zstyle ':vcs_info:*:clean:' check-head true
     zstyle ':clean:*' 256bit true
     zstyle ':clean:normal:*' prompt-symbol '❯'
     zstyle ':clean:root:*' prompt-symbol '#'
@@ -149,9 +131,13 @@ prompt_clean_chpwd() {
         local rev=("${(@z)arrows}")
         local left=$rev[1] right=$rev[2]
 
+        local behind_arrow ahead_arrow
+        zstyle -s ':vcs_info:*:clean:' headbehindstr behind_arrow
+        zstyle -s ':vcs_info:*:clean:' headaheadstr ahead_arrow
+
         unset arrows
-        (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
-        (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
+        (( right > 0 )) && arrows+=${behind-arrow}
+        (( left > 0 )) && arrows+=${ahead-arrow}
 
         [[ -n $arrows ]] || return
 
