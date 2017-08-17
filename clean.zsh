@@ -30,10 +30,11 @@ prompt_clean_default() {
     zstyle ':vcs_info:*' check-for-changes true
 
     # Clean specific
-    zstyle ':vcs_info:*:clean:*' untrackedstr '.'
-    zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
-    zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
-    zstyle ':vcs_info:*:clean:*' check-head true
+    zstyle ':vcs_info:*:clean:' untrackedstr '.'
+    zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
+    zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
+    zstyle ':vcs_info:*:clean:' check-for-utracked true
+    zstyle ':vcs_info:*:clean:' check-head true
     zstyle ':clean:*' 256bit true
     zstyle ':clean:normal:*' prompt-symbol '❯'
     zstyle ':clean:root:*' prompt-symbol '#'
@@ -67,6 +68,15 @@ prompt_clean_setup() {
     # Additional hooks
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
+    # Additional clean specific styles
+    zstyle ':vcs_info:*:clean:' untrackedstr '.'
+    zstyle ':vcs_info:*:clean:' headbehindstr '⇣'
+    zstyle ':vcs_info:*:clean:' headaheadstr '⇡'
+    zstyle ':vcs_info:*:clean:' check-for-utracked true
+    zstyle ':vcs_info:*:clean:' check-head true
+    zstyle ':clean:*' 256bit true
+    zstyle ':clean:normal:*' prompt-symbol '❯'
+    zstyle ':clean:root:*' prompt-symbol '#'
 
     promptinit
 
@@ -113,15 +123,11 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-untracked() {
-
     if [[ $1 -eq 0 ]]
     then
         local check
-        if ! zstyle -b ":vcs_info:$svn:clean" check-head check
-        then
-            check=
-        fi
-        if $check &&\
+        zstyle -b ":vcs_info:${svn}:clean:" check-for-utracked check
+        if [[ $check = 'yes' ]] &&\
             [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
             $vcs status --porcelain | grep '??' &> /dev/null
         then
@@ -135,17 +141,22 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-arrows() {
-    local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
-    local rev=("${(@z)arrows}")
-    local left=$rev[1] right=$rev[2]
+    local check
+    zstyle -b ":vcs_info:${svn}:clean:" check-head check
+    if [[ $check = 'yes' ]] &&\
+    then
+        local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
+        local rev=("${(@z)arrows}")
+        local left=$rev[1] right=$rev[2]
 
-    unset arrows
-    (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
-    (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
+        unset arrows
+        (( right > 0 )) && arrows+=${GIT_DOWN_ARROW:-⇣}
+        (( left > 0 )) && arrows+=${GIT_UP_ARROW:-⇡}
 
-    [[ -n $arrows ]] || return
+        [[ -n $arrows ]] || return
 
-    hook_com[action]+=$arrows
+        hook_com[action]+=$arrows
+    fi
 }
 
 # turns seconds into human readable time
