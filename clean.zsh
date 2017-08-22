@@ -39,10 +39,6 @@ prompt_clean_setup() {
     zstyle ':vcs_info:*' enable ALL
     zstyle ':vcs_info:*' max-exports 3
     zstyle ':vcs_info:*' use-simple true
-    zstyle ':vcs_info:*' get-revision true
-    zstyle ':vcs_info:*' check-for-changes true
-    zstyle ':vcs_info:*' unstagedstr '*'
-    zstyle ':vcs_info:*' stagedstr '+'
     zstyle ':vcs_info:*:*' formats "%s/%b" "%c%u"
     zstyle ':vcs_info:*:*' actionformats "%s/%b" "%c%u" "%a"
     zstyle ':vcs_info:git:*' formats "%b" "%c%u"
@@ -51,9 +47,23 @@ prompt_clean_setup() {
     zstyle ':vcs_info:git*+post-backend:*' hooks git-arrows
     zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
     # Additional clean specific styles
-    zstyle ':vcs_info:*:clean:' check-for-utracked true
-    zstyle ':vcs_info:*:clean:' check-head true
 
+    # Set other defaults
+    zstyle -t ':vcs_info:*' get-revision; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' get-revision true
+    fi
+    zstyle -t ':vcs_info:*' check-for-changes; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' check-for-changes true
+    fi
+    zstyle -t ':vcs_info:*' unstagedstr; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' unstagedstr '*'
+    fi
+    zstyle -t ':vcs_info:*' stagedstr; if [[ $? -eq 2 ]]; then
+        zstyle ':vcs_info:*' stagedstr '+'
+    fi
+
+    # zstyle ':vcs_info:*:clean:*' check-for-untracked true
+    # zstyle ':vcs_info:*:clean:*' check-head true
     # zstyle ':vcs_info:*:clean:*' untrackedstr '.'
     # zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
     # zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
@@ -70,7 +80,7 @@ prompt_clean_setup() {
 }
 
 prompt_clean_render() {
-    local prompt_sym root_prompt_sym
+    local prompt_sym root_prompt_sym prompt_username
     zstyle -s ':clean:normal:' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
@@ -84,7 +94,7 @@ prompt_clean_render() {
         $prompt_newline # Initial newline, for spaciousness.
         $prompt_username
         '%F{45}%~%f' # Path
-        '%(1V. %(3V.%F{83}.%F{242})%1v%2v%(3V. %3v.)%f.)' # VCS status
+        '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
         '%(4V. %F{215}%4v%f.)' # Execution time
         $prompt_newline # Separate preprompt and prompt.
         "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
@@ -114,37 +124,31 @@ prompt_clean_chpwd() {
 }
 
 +vi-git-untracked() {
-    if [[ $1 -eq 0 ]]
+    if [[ $1 -eq 0 ]] && \
+        zstyle -T ":vcs_info:${vcs}:clean:-all-" check-for-untracked && \
+        [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        $vcs status --porcelain | grep '??' &> /dev/null
     then
-        local check
-        zstyle -b ":vcs_info:${svn}:clean:" check-for-utracked check
-        if [[ $check = 'yes' ]] &&\
-            [[ $($vcs rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
-            $vcs status --porcelain | grep '??' &> /dev/null
-        then
-            # This will show the marker if there are any untracked files in repo.
-            # If instead you want to show the marker only if there are untracked
-            # files in $PWD, use:
-            #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-            local sym
-            zstyle -s ':vcs_info:*:clean:' untrackedstr sym || sym='.'
-            hook_com[unstaged]+=$sym
-        fi
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        local sym
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" untrackedstr sym || sym='.'
+        hook_com[unstaged]+=$sym
     fi
 }
 
 +vi-git-arrows() {
-    local check
-    zstyle -b ":vcs_info:${svn}:clean:" check-head check
-    if [[ $check = 'yes' ]] &&\
+    if zstyle -T ":vcs_info:${vcs}:clean:-all-" check-head
     then
         local arrows=$($vcs rev-list --left-right --count HEAD...@'{u}')
         local rev=("${(@z)arrows}")
         local left=$rev[1] right=$rev[2]
 
         local behind_arrow ahead_arrow
-        zstyle -s ':vcs_info:*:clean:' headbehindstr behind_arrow || behind_arrow='⇣'
-        zstyle -s ':vcs_info:*:clean:' headaheadstr ahead_arrow || ahead_arrow='⇡'
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" headbehindstr behind_arrow || behind_arrow='⇣'
+        zstyle -s ":vcs_info:${vcs}:clean:-all-" headaheadstr ahead_arrow || ahead_arrow='⇡'
 
         unset arrows
         (( right > 0 )) && arrows+=${behind_arrow}
