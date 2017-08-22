@@ -75,17 +75,17 @@ prompt_clean_render() {
     zstyle -s ':clean:root:' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
     # show username@host if logged in through SSH
-    [[ "$SSH_CONNECTION" != '' ]] && prompt_username=' %F{255}%n@%m%f'
+    [[ "$SSH_CONNECTION" != '' ]] && prompt_username='%F{83}%n@%m%f:'
     # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
+        $prompt_username
         '%F{45}%~%f' # Path
         '%(1V. %(3V.%F{83}.%F{242})%1v%2v%(3V. %3v.)%f.)' # VCS status
         '%(4V. %F{215}%4v%f.)' # Execution time
-        $prompt_username
         $prompt_newline # Separate preprompt and prompt.
         "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
     )
