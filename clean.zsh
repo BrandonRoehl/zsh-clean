@@ -151,10 +151,16 @@ prompt_clean_chpwd() {
         zstyle -s ":vcs_info:${vcs}:clean:-all-" headaheadstr ahead_arrow || ahead_arrow='⇡'
 
         unset arrows
-        (( right > 0 )) && arrows+=${behind_arrow}
-        (( left > 0 )) && arrows+=${ahead_arrow}
-
-        [[ -n $arrows ]] || return
+        if (( right > 0 ))
+        then
+            (( right > 1 )) && arrows+=$right
+            arrows+=$behind_arrow
+        fi
+        if (( left > 0 ))
+        then
+            (( left > 1 )) && arrows+=$left
+            arrows+=$ahead_arrow
+        fi
 
         hook_com[action]+=$arrows
     fi
