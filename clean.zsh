@@ -85,7 +85,7 @@ prompt_clean_render() {
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
     # show username@host if logged in through SSH
-    [[ "$SSH_CONNECTION" != '' ]] && prompt_username='%F{83}%n@%m%f:'
+    [[ "$SSH_CONNECTION" != '' ]] && prompt_username='%F{83}%m%f:'
     # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
