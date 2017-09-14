@@ -142,7 +142,7 @@ prompt_clean_chpwd() {
 +vi-git-arrows() {
     if zstyle -T ":vcs_info:${vcs}:clean:arrows" check-head
     then
-        if [[ $(git rev-parse --abbrev-ref --symbolic-full-name) -eq '' ]]
+        if [[ -z $(git rev-parse --abbrev-ref --symbolic-full-name) ]]
         then
           return
         fi
