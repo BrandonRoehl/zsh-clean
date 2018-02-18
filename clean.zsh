@@ -14,6 +14,7 @@
 # %1 => vcs branch and vcs
 # %2 => vcs dirty
 # %3 => vcs action
+# %4 => cmd execution time
 # %(?..) => prompt conditional - %(condition.true.false)
 # terminal codes:
 # \e7   => save cursor position
