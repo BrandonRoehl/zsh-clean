@@ -107,7 +107,7 @@ prompt_clean_render() {
 }
 
 prompt_clean_preexec() {
-    cmd_timestamp=$EPOCHSECONDS
+    typeset -g cmd_timestamp=$EPOCHSECONDS
 }
 
 prompt_clean_precmd() {
