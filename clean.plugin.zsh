@@ -1,1 +1,4 @@
-source ${0:A:h}/clean.zsh
+autoload -U promptinit
+promptinit
+prompt clean
+

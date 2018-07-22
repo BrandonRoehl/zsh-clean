@@ -1,0 +1,46 @@
+#!/bin/env zsh
+source ${0:A:h}/prompt_clean_setup
+
+prompt_wordy_setup() {
+    setopt localoptions noshwordsplit prompt_subst
+
+    # Load required modules
+    zmodload zsh/datetime
+    zmodload zsh/parameter
+
+    prompt_clean_zstyles
+    prompt_clean_add_hooks
+    prompt_wordy_render
+}
+
+prompt_wordy_render() {
+    local prompt_sym root_prompt_sym prompt_username
+    zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
+    zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
+
+    # show username@host if logged in through SSH
+    [[ "$SSH_CONNECTION" != '' ]] && prompt_username='am %F{83}%m%f '
+    # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
+
+    # Construct the new prompt with a clean preprompt.
+    local -ah ps1
+    ps1=(
+        $prompt_newline # Initial newline, for spaciousness.
+        $prompt_username
+        'in %F{45}%~%f' # Path
+        '%(1V. on %F{%242}%1v%2v%(3V. %3v.)%f.)' # VCS status
+        '%(4V. taking %F{215}%4v%f.)' # Execution time
+        $prompt_newline # Separate preprompt and prompt.
+        "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
+    )
+
+
+    PS1="${(j..)ps1}"
+    PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
+}
+
+prompt_wordy_preview () {
+    prompt_preview_theme clean "$@"
+}
+
+prompt_wordy_setup "$@"

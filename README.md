@@ -7,16 +7,26 @@ Clean is not pure and pure is not clean
 
 ## Installation
 
-### [antigen](https://github.com/zsh-users/antigen)
+Now integrates directly with [zsh prompt](https://github.com/zsh-users/zsh/blob/627c91357c29e6fbe8b32d1b5f17f02d555d8360/Functions/Prompts/promptinit#L200)
 
-Add to `.zshrc`
+1. Add to your this repo to your `fpath`
+2. Select your theme with `prompt clean`
+
+### [antigen](https://github.com/zsh-users/antigen)
 
 ```zsh
 antigen bundle BrandonRoehl/zsh-clean
 ```
 
-Or anything else that supports `.plugin.zsh` or just source `clean.zsh` in your
-`.zshrc`
+### zsh stock
+
+```zsh
+fpath=($prompt_themes /path/to/repo)
+autoload -U promptinit
+promptinit
+
+prompt clean
+```
 
 ## Configuration
 
