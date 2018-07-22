@@ -21,8 +21,8 @@ antigen bundle BrandonRoehl/zsh-clean
 ### zsh stock
 
 ```zsh
-fpath=($prompt_themes /path/to/repo)
 autoload -U promptinit
+fpath=($prompt_themes /path/to/repo)
 promptinit
 
 prompt clean
