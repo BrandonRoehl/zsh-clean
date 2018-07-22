@@ -28,7 +28,7 @@ prompt_wordy_render() {
         $prompt_newline # Initial newline, for spaciousness.
         $prompt_username
         'in %F{45}%~%f' # Path
-        '%(1V. on %F{%242}%1v%2v%(3V. %3v.)%f.)' # VCS status
+        '%(1V. on %F{83}%1v%2v%(3V. %3v.)%f.)' # VCS status
         '%(4V. taking %F{215}%4v%f.)' # Execution time
         $prompt_newline # Separate preprompt and prompt.
         "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
