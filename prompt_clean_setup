@@ -91,16 +91,16 @@ prompt_clean_pwd() {
     if [[ -v prompt_clean_pwd_length ]]; then
         num=$prompt_clean_pwd_length
     else
-        num='1'
+        num=1
     fi
 
-    p="${PWD#${HOME}}"
+    p="${PWD#$HOME}"
     if [[ $PWD != $p ]]; then
         printf '~'
     fi
 
     dirlist=(${(ps:/:)p})
-    if [[ ${#dirlist[@]} -gt num ]]; then
+    if [[ $num -ne 0 && ${#dirlist[@]} -gt $num ]]; then
         for q in ${dirlist:0:(-$num)}; do
             printf "/${q:0:1}"
         done
@@ -108,7 +108,7 @@ prompt_clean_pwd() {
             printf "/$q"
         done
     else
-        printf "$tmp$p"
+        printf "$p"
     fi
 }
 
