@@ -99,11 +99,7 @@ prompt_clean_pwd() {
         printf '~'
     fi
 
-    dirlist=()
-    for q in ${(ps:/:)p}; do
-        dirlist+=$q
-    done
-
+    dirlist=(${(ps:/:)p})
     if [[ ${#dirlist[@]} -gt num ]]; then
         for q in ${dirlist:0:(-$num)}; do
             printf "/${q:0:1}"
