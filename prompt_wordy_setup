@@ -11,9 +11,7 @@ prompt_wordy_setup() {
     prompt_clean_zstyles
     prompt_clean_add_hooks
     prompt_wordy_render
-}
 
-prompt_wordy_render() {
     local prompt_sym root_prompt_sym prompt_username
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
@@ -34,13 +32,12 @@ prompt_wordy_render() {
         "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
     )
 
-
     PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
 }
 
 prompt_wordy_preview () {
-    prompt_preview_theme clean "$@"
+    prompt_preview_theme wordy "$@"
 }
 
 prompt_wordy_setup "$@"

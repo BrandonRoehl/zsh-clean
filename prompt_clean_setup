@@ -171,37 +171,53 @@ prompt_clean_setup() {
 
     prompt_clean_zstyles
     prompt_clean_add_hooks
-    prompt_clean_render
-}
 
-prompt_clean_render() {
     local prompt_sym root_prompt_sym prompt_username
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
 
     # show username@host if logged in through SSH
-    [[ "$SSH_CONNECTION" != '' ]] && prompt_username='%F{83}%m%f:'
+    if [[ $SSH_CONNECTION != '' ]]; then
+        if [[ $1 == '256' ]]; then
+            prompt_username='%F{83}%m%f:'
+        else
+            prompt_username='%F{10}%m%f:'
+        fi
+    fi
     # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
-    ps1=(
-        $prompt_newline # Initial newline, for spaciousness.
-        $prompt_username
-        '%F{45}%~%f' # Path
-        '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
-        '%(4V. %F{215}%4v%f.)' # Execution time
-        $prompt_newline # Separate preprompt and prompt.
-        "%(?.%F{207}.%F{203})%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
-    )
-
+    if [[ $1 == '256' ]]; then
+        ps1=(
+            $prompt_newline # Initial newline, for spaciousness.
+            $prompt_username
+            '%F{45}%~%f' # Path
+            '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
+            '%(4V. %F{215}%4v%f.)' # Execution time
+            $prompt_newline # Separate preprompt and prompt.
+            "%F{%(?.207.203)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
+        )
+    else
+        ps1=(
+            $prompt_newline # Initial newline, for spaciousness.
+            $prompt_username
+            '%F{14}%~%f' # Path
+            '%(1V. %F{%(3V.10.8)}%1v%2v%(3V. %3v.)%f.)' # VCS status
+            '%(4V. %F{11}%4v%f.)' # Execution time
+            $prompt_newline # Separate preprompt and prompt.
+            "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
+        )
+    fi
 
     PS1="${(j..)ps1}"
     PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
 }
 
-prompt_bart_preview () {
-    prompt_preview_theme clean "$@"
+prompt_clean_preview () {
+    prompt_preview_theme clean
+    prompt_preview_theme clean 256
+    print $cmd_timestamp
 }
 
 prompt_clean_setup "$@"

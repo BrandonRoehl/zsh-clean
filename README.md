@@ -16,6 +16,8 @@ Now integrates directly with [zsh prompt](https://github.com/zsh-users/zsh/blob/
 
 ```zsh
 antigen bundle BrandonRoehl/zsh-clean
+# defaults to executing `prompt clean` or `prompt clean 256`
+# based on your terminal
 ```
 
 ### zsh stock
@@ -25,7 +27,8 @@ autoload -U promptinit
 fpath=($prompt_themes /path/to/repo)
 promptinit
 
-prompt clean
+prompt clean # for Xterm
+prompt clean 256 # for Xterm 256
 ```
 
 ## Configuration
