@@ -99,6 +99,7 @@ prompt_clean_pwd() {
         printf '~'
     fi
 
+    local -a dirlist
     dirlist=(${(ps:/:)p})
     if [[ $num -ne 0 && ${#dirlist[@]} -gt $num ]]; then
         for q in ${dirlist:0:(-$num)}; do
@@ -203,13 +204,14 @@ prompt_clean_setup() {
         prompt_clean_pwd_length=$2
     fi
 
-    local prompt_sym root_prompt_sym prompt_username
+    local prompt_sym root_prompt_sym prompt_username term
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
+    term=`[[ $1 =~ '256color$' ]]`
 
     # show username@host if logged in through SSH
     if [[ $SSH_CONNECTION != '' ]]; then
-        if [[ $1 == '256' ]]; then
+        if $term; then
             prompt_username='%F{83}%m%f:'
         else
             prompt_username='%F{10}%m%f:'
@@ -219,7 +221,7 @@ prompt_clean_setup() {
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
-    if [[ $1 == '256' ]]; then
+    if $term; then
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
@@ -248,9 +250,9 @@ prompt_clean_setup() {
 
 prompt_clean_preview () {
     prompt_preview_theme clean
-    prompt_preview_theme clean 256
+    prompt_preview_theme clean 256colors
     prompt_preview_theme clean xterm 0
-    prompt_preview_theme clean 256 0
+    prompt_preview_theme clean 256colors 0
     print $cmd_timestamp
 }
 
