@@ -83,6 +83,37 @@ prompt_clean_precmd() {
     psvar[1]=$vcs_info_msg_0_
     psvar[2]=$vcs_info_msg_1_
     psvar[3]=$vcs_info_msg_2_
+    psvar[5]=`prompt_clean_pwd`
+}
+
+prompt_clean_pwd() {
+    local num tmp p q
+    if [[ -v prompt_clean_pwd_length ]]; then
+        num=$prompt_clean_pwd_length
+    else
+        num='1'
+    fi
+
+    p="${PWD#${HOME}}"
+    if [[ $PWD != $p ]]; then
+        printf '~'
+    fi
+
+    dirlist=()
+    for q in ${(ps:/:)p}; do
+        dirlist+=$q
+    done
+
+    if [[ ${#dirlist[@]} -gt num ]]; then
+        for q in ${dirlist:0:(-$num)}; do
+            printf "/${q:0:1}"
+        done
+        for q in ${dirlist:(-$num)}; do
+            printf "/$q"
+        done
+    else
+        printf "$tmp$p"
+    fi
 }
 
 prompt_clean_chpwd() {
@@ -172,6 +203,10 @@ prompt_clean_setup() {
     prompt_clean_zstyles
     prompt_clean_add_hooks
 
+    if [[ ! -z $2 ]]; then
+        prompt_clean_pwd_length=$2
+    fi
+
     local prompt_sym root_prompt_sym prompt_username
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
@@ -192,7 +227,7 @@ prompt_clean_setup() {
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
-            '%F{45}%~%f' # Path
+            '%F{45}%5v%f' # Path
             '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
             '%(4V. %F{215}%4v%f.)' # Execution time
             $prompt_newline # Separate preprompt and prompt.
@@ -203,7 +238,7 @@ prompt_clean_setup() {
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
-            '%F{14}%~%f' # Path
+            '%F{45}%5v%f' # Path
             '%(1V. %F{%(3V.10.8)}%1v%2v%(3V. %3v.)%f.)' # VCS status
             '%(4V. %F{11}%4v%f.)' # Execution time
             $prompt_newline # Separate preprompt and prompt.
@@ -218,6 +253,8 @@ prompt_clean_setup() {
 prompt_clean_preview () {
     prompt_preview_theme clean
     prompt_preview_theme clean 256
+    prompt_preview_theme clean xterm 0
+    prompt_preview_theme clean 256 0
     print $cmd_timestamp
 }
 
