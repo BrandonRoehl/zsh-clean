@@ -207,11 +207,11 @@ prompt_clean_setup() {
     local prompt_sym root_prompt_sym prompt_username term
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
-    term=`[[ $1 =~ '256color$' ]]`
+    [[ $1 =~ '256color$' ]]; term=$?
 
     # show username@host if logged in through SSH
     if [[ $SSH_CONNECTION != '' ]]; then
-        if $term; then
+        if [[ $term -eq 0 ]]; then
             prompt_username='%F{83}%m%f:'
         else
             prompt_username='%F{10}%m%f:'
@@ -221,7 +221,7 @@ prompt_clean_setup() {
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
-    if $term; then
+    if [[ $term -eq 0 ]]; then
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
@@ -236,7 +236,7 @@ prompt_clean_setup() {
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
-            '%F{45}%5v%f' # Path
+            '%F{14}%5v%f' # Path
             '%(1V. %F{%(3V.10.8)}%1v%2v%(3V. %3v.)%f.)' # VCS status
             '%(4V. %F{11}%4v%f.)' # Execution time
             $prompt_newline # Separate preprompt and prompt.
@@ -250,10 +250,9 @@ prompt_clean_setup() {
 
 prompt_clean_preview () {
     prompt_preview_theme clean
-    prompt_preview_theme clean 256colors
+    prompt_preview_theme clean 256color
     prompt_preview_theme clean xterm 0
-    prompt_preview_theme clean 256colors 0
-    print $cmd_timestamp
+    prompt_preview_theme clean 256color 0
 }
 
 prompt_clean_setup "$@"
