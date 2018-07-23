@@ -198,6 +198,7 @@ prompt_clean_setup() {
             $prompt_newline # Separate preprompt and prompt.
             "%F{%(?.207.203)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
         )
+        PS2="%F{242}%_ %F{37}%(!.#.$prompt_sym)%f "
     else
         ps1=(
             $prompt_newline # Initial newline, for spaciousness.
@@ -208,10 +209,10 @@ prompt_clean_setup() {
             $prompt_newline # Separate preprompt and prompt.
             "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
         )
+        PS2="%F{8}%_ %F{14}%(!.#.$prompt_sym)%f "
     fi
 
     PS1="${(j..)ps1}"
-    PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
 }
 
 prompt_clean_preview () {

@@ -32,7 +32,7 @@ prompt_wordy_setup() {
     )
 
     PS1="${(j..)ps1}"
-    PS2='%F{242}%_ %F{37}%(!.#.${PROMPT_SYMBOL:-❯})%f '
+    PS2="%F{242}%_ %F{37}%(!.#.$prompt_sym)%f "
 }
 
 prompt_wordy_preview () {
