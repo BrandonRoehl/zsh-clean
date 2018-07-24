@@ -42,26 +42,18 @@ prompt_clean_zstyles() {
     # Additional clean specific styles
 
     # Set other defaults
-    zstyle -t ':vcs_info:*' get-revision; if [[ $? -eq 2 ]]; then
-        zstyle ':vcs_info:*' get-revision true
-    fi
-    zstyle -t ':vcs_info:*' check-for-changes; if [[ $? -eq 2 ]]; then
-        zstyle ':vcs_info:*' check-for-changes true
-    fi
-    zstyle -t ':vcs_info:*' unstagedstr; if [[ $? -eq 2 ]]; then
-        zstyle ':vcs_info:*' unstagedstr '*'
-    fi
-    zstyle -t ':vcs_info:*' stagedstr; if [[ $? -eq 2 ]]; then
-        zstyle ':vcs_info:*' stagedstr '+'
-    fi
+    zstyle ':vcs_info:*' get-revision true
+    zstyle ':vcs_info:*' check-for-changes true
+    zstyle ':vcs_info:*' unstagedstr '*'
+    zstyle ':vcs_info:*' stagedstr '+'
 
-    # zstyle ':vcs_info:*:clean:*' check-for-untracked true
-    # zstyle ':vcs_info:*:clean:*' check-head true
-    # zstyle ':vcs_info:*:clean:*' untrackedstr '.'
-    # zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
-    # zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
-    # zstyle ':clean:normal:*' prompt-symbol '❯'
-    # zstyle ':clean:root:*' prompt-symbol '#'
+    zstyle ':vcs_info:*:clean:*' check-for-untracked true
+    zstyle ':vcs_info:*:clean:*' check-head true
+    zstyle ':vcs_info:*:clean:*' untrackedstr '.'
+    zstyle ':vcs_info:*:clean:*' headbehindstr '⇣'
+    zstyle ':vcs_info:*:clean:*' headaheadstr '⇡'
+    zstyle ':clean:normal:*' prompt-symbol '❯'
+    zstyle ':clean:root:*' prompt-symbol '#'
 }
 
 prompt_clean_add_hooks() {
@@ -129,7 +121,7 @@ prompt_clean_chpwd() {
         # files in $PWD, use:
         #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
         local sym
-        zstyle -s ":vcs_info:${vcs}:clean:untracked" untrackedstr sym || sym='.'
+        zstyle -s ":vcs_info:${vcs}:clean:untracked" untrackedstr sym
         hook_com[unstaged]+=$sym
     fi
 }
@@ -142,8 +134,8 @@ prompt_clean_chpwd() {
         local left=$rev[1] right=$rev[2]
 
         local behind_arrow ahead_arrow
-        zstyle -s ":vcs_info:${vcs}:clean:arrows" headbehindstr behind_arrow || behind_arrow='⇣'
-        zstyle -s ":vcs_info:${vcs}:clean:arrows" headaheadstr ahead_arrow || ahead_arrow='⇡'
+        zstyle -s ":vcs_info:${vcs}:clean:arrows" headbehindstr behind_arrow
+        zstyle -s ":vcs_info:${vcs}:clean:arrows" headaheadstr ahead_arrow
 
         unset arrows
         if (( right > 0 ))
@@ -202,6 +194,8 @@ prompt_clean_setup() {
 
     if [[ ! -z $2 ]]; then
         prompt_clean_pwd_length=$2
+    else
+        prompt_clean_pwd_length='3'
     fi
 
     local prompt_sym root_prompt_sym prompt_username term
