@@ -8,6 +8,8 @@ prompt_wordy_setup() {
     zmodload zsh/datetime
     zmodload zsh/parameter
 
+    unset PS1 PS2 RPS1
+
     prompt_clean_zstyles
     prompt_clean_add_hooks
 
