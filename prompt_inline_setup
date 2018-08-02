@@ -13,7 +13,7 @@ prompt_inline_setup() {
     prompt_clean_zstyles
     prompt_clean_add_hooks
 
-    if [[ ! -z $2 ]]; then
+    if [[ -n $2 ]]; then
         prompt_clean_pwd_length=$2
     else
         prompt_clean_pwd_length='1'
@@ -22,7 +22,11 @@ prompt_inline_setup() {
     local prompt_sym root_prompt_sym prompt_username term
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
-    [[ $1 =~ '256color$' ]]; term=$?
+    if [[ -n $1 ]]; then
+        [[ $1 =~ '256color$' ]]; term=$?
+    else
+        [[ $TERM =~ '256color$' ]]; term=$?
+    fi
 
     # show username@host if logged in through SSH
     if [[ $SSH_CONNECTION != '' ]]; then
