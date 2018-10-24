@@ -51,7 +51,7 @@ prompt_wordy_setup() {
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
             '%B%F{45}%5v%b%f' # Path
-            '%(1V. on %F{207}⎇ %1v%f%(2v. %B%F{203}[%2v]%b%f.)%(3V. %F{242}%3v.)%f.)' # VCS status
+            '%(1V. on %F{207}⎇ %1v%f%(2V. %B%F{203}[%2v]%b%f.)%(3V. %F{41}%3v.)%f.)' # VCS status
             '%(4V. %F{215}%4v%f.)' # Execution time
             $prompt_newline # Separate preprompt and prompt.
             "%F{%(?.41.203)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
@@ -62,7 +62,7 @@ prompt_wordy_setup() {
             $prompt_newline # Initial newline, for spaciousness.
             $prompt_username
             '%F{14}%5v%f' # Path
-            '%(1V. on %F{13}%1v%(2v. %F{9}[%2v].)%(3V. %F{10}%3v.)%f.)' # VCS status
+            '%(1V. on %F{13}%1v%(2V. %F{9}[%2v].)%(3V. %F{10}%3v.)%f.)' # VCS status
             '%(4V. %F{11}%4v%f.)' # Execution time
             $prompt_newline # Separate preprompt and prompt.
             "%F{%(?.2.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
