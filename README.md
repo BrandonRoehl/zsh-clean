@@ -86,7 +86,7 @@ Or be a single line
 
 | Pure | Clean |
 |------|-------|
-| Requires Dependencies | Doesn't |
+| Requires Dependencies for async | Async prompt replacement without |
 | Isn't customizable | Can completly replace the prompt |
 | Custom methods for vcs | Uses `vcs_info` hooks |
 | Doesn't show breakdown of vcs | Shows the breakdown like most other git prompts |
