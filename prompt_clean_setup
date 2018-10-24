@@ -106,8 +106,20 @@ prompt_clean_pwd() {
 }
 
 prompt_clean_chpwd() {
-    command git rev-parse --is-inside-work-tree &> /dev/null || return
-    (git fetch &> /dev/null &)
+    ((
+        command git rev-parse --is-inside-work-tree &> /dev/null &&
+            git fetch &> /dev/null &&
+            prompt_clean_reprint
+    ) &)
+}
+
+prompt_clean_reprint() {
+    vcs_info
+    psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
+    psvar[5]=`prompt_clean_pwd`
+    print -Pn "\e7\e[1F\e[K\e[1F\e[K$PROMPT\e8"
 }
 
 +vi-git-untracked() {
