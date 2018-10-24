@@ -148,7 +148,7 @@ prompt_clean_reprint() {
     do
         print -n "\e[1F\e[K"
     done
-    print -Pn "$PROMPT\e8"
+    print -Pn "\e[1G$PROMPT\e8"
 }
 
 prompt_clean_pwd() {
