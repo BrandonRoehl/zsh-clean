@@ -56,78 +56,7 @@ prompt_clean_zstyles() {
     zstyle ':clean:root:*' prompt-symbol '#'
 }
 
-prompt_clean_add_hooks() {
-    autoload -Uz add-zsh-hook
-    autoload -Uz vcs_info
-    add-zsh-hook chpwd prompt_clean_chpwd
-    add-zsh-hook precmd prompt_clean_precmd
-    add-zsh-hook preexec prompt_clean_preexec
-}
-
-prompt_clean_preexec() {
-    typeset -g cmd_timestamp=$EPOCHSECONDS
-}
-
-prompt_clean_precmd() {
-    psvar[4]=`prompt_clean_check_cmd_exec_time`
-    unset cmd_timestamp
-    vcs_info
-    psvar[1]=$vcs_info_msg_0_
-    psvar[2]=$vcs_info_msg_1_
-    psvar[3]=$vcs_info_msg_2_
-    psvar[5]=`prompt_clean_pwd`
-}
-
-prompt_clean_pwd() {
-    local num tmp p q
-    if [[ -v prompt_clean_pwd_length ]]; then
-        num=$prompt_clean_pwd_length
-    else
-        num=1
-    fi
-
-    p="${PWD#$HOME}"
-    if [[ $PWD != $p ]]; then
-        printf '~'
-    fi
-
-    local -a dirlist
-    dirlist=(${(ps:/:)p})
-    if [[ $num -ne 0 && ${#dirlist[@]} -gt $num ]]; then
-        for q in ${dirlist:0:(-$num)}; do
-            printf "/${q:0:1}"
-        done
-        for q in ${dirlist:(-$num)}; do
-            printf "/$q"
-        done
-    else
-        printf "$p"
-    fi
-}
-
-prompt_clean_chpwd() {
-    ((
-        git rev-parse --is-inside-work-tree &> /dev/null &&
-            git fetch &> /dev/null &&
-            prompt_clean_reprint
-    ) &)
-}
-
-prompt_clean_reprint() {
-    vcs_info
-    psvar[1]=$vcs_info_msg_0_
-    psvar[2]=$vcs_info_msg_1_
-    psvar[3]=$vcs_info_msg_2_
-    psvar[5]=`prompt_clean_pwd`
-
-    local l=`echo $PROMPT | wc -l`
-    print -n "\e7"
-    for (( i = 1 ; i < $l ; i++ ))
-    do
-        print -n "\e[1F\e[K"
-    done
-    print -Pn "$PROMPT\e8"
-}
+### VCS Hooks ###
 
 +vi-git-untracked() {
     if [[ $1 -eq 0 ]] && \
@@ -172,6 +101,92 @@ prompt_clean_reprint() {
     fi
 }
 
+### Prompt Hooks ###
+
+prompt_clean_add_hooks() {
+    autoload -Uz add-zsh-hook
+    autoload -Uz vcs_info
+    add-zsh-hook chpwd prompt_clean_chpwd
+    add-zsh-hook precmd prompt_clean_precmd
+    add-zsh-hook preexec prompt_clean_preexec
+}
+
+prompt_clean_preexec() {
+    typeset -g cmd_timestamp=$EPOCHSECONDS
+}
+
+prompt_clean_precmd() {
+    psvar[4]=`prompt_clean_check_cmd_exec_time`
+    unset cmd_timestamp
+    vcs_info
+    psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
+    psvar[5]=`prompt_clean_pwd`
+}
+
+prompt_clean_chpwd() {
+    ((
+        git rev-parse --is-inside-work-tree &> /dev/null &&
+            git fetch &> /dev/null &&
+            prompt_clean_reprint
+    ) &)
+}
+
+### Helpers ###
+
+prompt_clean_reprint() {
+    vcs_info
+    psvar[1]=$vcs_info_msg_0_
+    psvar[2]=$vcs_info_msg_1_
+    psvar[3]=$vcs_info_msg_2_
+    psvar[5]=`prompt_clean_pwd`
+
+    local l=`echo $PROMPT | wc -l`
+    print -n "\e7"
+    for (( i = 1 ; i < $l ; i++ ))
+    do
+        print -n "\e[1F\e[K"
+    done
+    print -Pn "$PROMPT\e8"
+}
+
+prompt_clean_pwd() {
+    local num tmp p q
+    if [[ -v prompt_clean_pwd_length ]]; then
+        num=$prompt_clean_pwd_length
+    else
+        num=1
+    fi
+
+    p="${PWD#$HOME}"
+    if [[ $PWD != $p ]]; then
+        printf '~'
+    fi
+
+    local -a dirlist
+    dirlist=(${(ps:/:)p})
+    if [[ $num -ne 0 && ${#dirlist[@]} -gt $num ]]; then
+        for q in ${dirlist:0:(-$num)}; do
+            printf "/${q:0:1}"
+        done
+        for q in ${dirlist:(-$num)}; do
+            printf "/$q"
+        done
+    else
+        printf "$p"
+    fi
+}
+
+prompt_clean_check_cmd_exec_time() {
+    integer elapsed
+    (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
+    if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
+    then
+        print `prompt_clean_human_time_to_var $elapsed`
+    fi
+}
+
 # turns seconds into human readable time
 # 165392 => 1d 21h 56m 32s
 # https://github.com/sindresorhus/pretty-time-zsh
@@ -188,15 +203,6 @@ prompt_clean_human_time_to_var() {
 
     # store human readable time in variable as specified by caller
     print "${human}"
-}
-
-prompt_clean_check_cmd_exec_time() {
-    integer elapsed
-    (( elapsed = EPOCHSECONDS - ${cmd_timestamp:-$EPOCHSECONDS} ))
-    if (( elapsed > ${CMD_MAX_EXEC_TIME:-5} ))
-    then
-        print `prompt_clean_human_time_to_var $elapsed`
-    fi
 }
 
 ### Default Theme ###
