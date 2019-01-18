@@ -1,5 +1,5 @@
 #!/bin/env zsh
-source $^fpath/prompt_clean_setup(N)
+source $^fpath/prompt_framework(N)
 
 prompt_wordy_setup() {
     setopt localoptions noshwordsplit prompt_subst
