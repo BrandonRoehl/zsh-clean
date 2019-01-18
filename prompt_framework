@@ -136,19 +136,20 @@ prompt_clean_chpwd() {
 ### Helpers ###
 
 prompt_clean_reprint() {
-    vcs_info
-    psvar[1]=$vcs_info_msg_0_
-    psvar[2]=$vcs_info_msg_1_
-    psvar[3]=$vcs_info_msg_2_
-    psvar[5]=`prompt_clean_pwd`
-
-    local l=`echo $PROMPT | wc -l`
-    print -n "\e7"
-    for (( i = 1 ; i < $l ; i++ ))
-    do
-        print -n "\e[1F\e[K"
-    done
-    print -Pn "\e[1G$PROMPT\e8"
+    ## Removed for bug will re-add TODO
+    # vcs_info
+    # psvar[1]=$vcs_info_msg_0_
+    # psvar[2]=$vcs_info_msg_1_
+    # psvar[3]=$vcs_info_msg_2_
+    # psvar[5]=`prompt_clean_pwd`
+    #
+    # local l=`echo $PROMPT | wc -l`
+    # print -n "\e7"
+    # for (( i = 1 ; i < $l ; i++ ))
+    # do
+    #     print -n "\e[1F\e[K"
+    # done
+    # print -Pn "\e[1G$PROMPT\e8"
 }
 
 prompt_clean_pwd() {
