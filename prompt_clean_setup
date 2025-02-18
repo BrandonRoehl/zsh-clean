@@ -23,9 +23,9 @@ prompt_clean_setup() {
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
     if [[ -n $1 ]]; then
-        [[ $1 =~ '256color$' ]]; term=$?
+        [[ $1 =~ '256color$' || $1 = 'truecolor' ]]; term=$?
     else
-        [[ $TERM =~ '256color$' ]]; term=$?
+        [[ $TERM =~ '256color$' || $COLORTERM = 'truecolor' ]]; echo $?
     fi
 
     # show username@host if logged in through SSH
