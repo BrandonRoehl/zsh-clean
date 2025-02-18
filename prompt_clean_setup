@@ -25,7 +25,7 @@ prompt_clean_setup() {
     if [[ -n $1 ]]; then
         [[ $1 =~ '256color$' || $1 = 'truecolor' ]]; term=$?
     else
-        [[ $TERM =~ '256color$' || $COLORTERM = 'truecolor' ]]; echo $?
+        [[ $TERM =~ '256color$' || $COLORTERM = 'truecolor' ]]; term=$?
     fi
 
     # show username@host if logged in through SSH
