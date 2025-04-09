@@ -22,47 +22,25 @@ prompt_clean_setup() {
     local prompt_sym root_prompt_sym prompt_username term
     zstyle -s ':clean:normal:render' prompt-symbol prompt_sym || prompt_sym='❯'
     zstyle -s ':clean:root:render' prompt-symbol root_prompt_sym || root_prompt_sym='#'
-    if [[ -n $1 ]]; then
-        [[ $1 =~ '256color$' || $1 = 'truecolor' ]]; term=$?
-    else
-        [[ $TERM =~ '256color$' || $COLORTERM = 'truecolor' ]]; term=$?
-    fi
 
     # show username@host if logged in through SSH
     if [[ $SSH_CONNECTION != '' ]]; then
-        if [[ $term -eq 0 ]]; then
-            prompt_username='%F{83}%m%f:'
-        else
-            prompt_username='%F{10}%m%f:'
-        fi
+        prompt_username='%F{10}%m%f:'
     fi
     # ( which rvm-prompt &> /dev/null ) && rvm_prompt='%F{242}$(rvm-prompt)%f'
 
     # Construct the new prompt with a clean preprompt.
     local -ah ps1
-    if [[ $term -eq 0 ]]; then
-        ps1=(
-            $prompt_newline # Initial newline, for spaciousness.
-            $prompt_username
-            '%F{45}%5v%f' # Path
-            '%(1V. %F{%(3V.83.242)}%1v%2v%(3V. %3v.)%f.)' # VCS status
-            '%(4V. %F{215}%4v%f.)' # Execution time
-            $prompt_newline # Separate preprompt and prompt.
-            "%F{%(?.207.203)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
-        )
-        PS2="%F{242}%_ %F{37}%(!.#.$prompt_sym)%f "
-    else
-        ps1=(
-            $prompt_newline # Initial newline, for spaciousness.
-            $prompt_username
-            '%F{14}%5v%f' # Path
-            '%(1V. %F{%(3V.10.8)}%1v%2v%(3V. %3v.)%f.)' # VCS status
-            '%(4V. %F{11}%4v%f.)' # Execution time
-            $prompt_newline # Separate preprompt and prompt.
-            "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
-        )
-        PS2="%F{8}%_ %F{14}%(!.#.$prompt_sym)%f "
-    fi
+    ps1=(
+        $prompt_newline # Initial newline, for spaciousness.
+        $prompt_username
+        '%F{14}%5v%f' # Path
+        '%(1V. %F{%(3V.10.8)}%1v%2v%(3V. %3v.)%f.)' # VCS status
+        '%(4V. %F{11}%4v%f.)' # Execution time
+        $prompt_newline # Separate preprompt and prompt.
+        "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
+    )
+    PS2="%F{8}%_ %F{14}%(!.#.$prompt_sym)%f "
 
     PS1="${(j..)ps1}"
 }
