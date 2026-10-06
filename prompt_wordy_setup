@@ -40,7 +40,7 @@ prompt_wordy_setup() {
     ps1=(
         $prompt_newline # Initial newline, for spaciousness.
         $prompt_username
-        '%F{14}%5v%f' # Path
+        '%B%F{4}%5v%b%f' # Path
         '%(1V. on %F{13}%1v%(2V. %F{9}[%2v].)%(3V. %F{10}%3v.)%f.)' # VCS status
         '%(4V. %F{11}%4v%f.)' # Execution time
         $prompt_newline # Separate preprompt and prompt.

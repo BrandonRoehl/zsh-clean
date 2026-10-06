@@ -33,7 +33,7 @@ prompt_inline_setup() {
     local -ah ps1 rps1
     ps1=(
         $prompt_username
-        '%F{14}%5v%f ' # Path
+        '%B%F{4}%5v%b%f ' # Path
         "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
     )
     rps1=(

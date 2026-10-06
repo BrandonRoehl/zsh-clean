@@ -40,7 +40,7 @@ prompt_clean_setup() {
         $prompt_newline # Separate preprompt and prompt.
         "%F{%(?.13.9)}%(!.$root_prompt_sym.$prompt_sym)%f " # Prompt symbol
     )
-    PS2="%F{8}%_ %B%F{4}%(!.#.$prompt_sym)%b%f "
+    PS2="%F{8}%_ %F{14}%(!.#.$prompt_sym)%f "
 
     PS1="${(j..)ps1}"
 }
